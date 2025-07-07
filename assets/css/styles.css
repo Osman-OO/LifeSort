@@ -25,3 +25,40 @@ body {
 .btn:hover {
   transform: scale(1.1);
 }
+/* Board-specific styles */
+.board {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.board h2 {
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.board label {
+  display: block;
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+.board input[type="radio"] {
+  margin-right: 10px;
+}
+
+.btn {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 10px;
+}
