@@ -1,21 +1,23 @@
 <?php
 session_start();
-include 'includes/db.php';
 
-// Save to leaderboard
-save_score("Player", $_SESSION['age'], $_SESSION['wealth']);
+// Roll dice and update position/age
+$roll = rand(1, 6);
+$_SESSION['position'] += $roll;
+$_SESSION['age'] += 1;
 
-// Reset session
-session_destroy();
+// Win condition: Reached end of board3 (e.g., position >= 30)
+if ($_SESSION['position'] >= 30) {
+  header("Location: win.php");
+  exit;
+}
+
+// Board transitions
+if ($_SESSION['position'] < 10) {
+  header("Location: board1.php");
+} elseif ($_SESSION['position'] < 20) {
+  header("Location: board2.php");
+} else {
+  header("Location: board3.php");
+}
 ?>
-
-<?php include 'includes/header.php'; ?>
-
-<div class="win">
-  <h1>CONGRATULATIONS!</h1>
-  <p>You retired at age <?php echo $_SESSION['age']; ?> with $<?php echo $_SESSION['wealth']; ?>!</p>
-  <a href="leaderboard.php" class="btn">View Leaderboard</a>
-  <a href="index.php" class="btn">Play Again</a>
-</div>
-
-<?php include 'includes/footer.php'; ?>
