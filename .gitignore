@@ -1,0 +1,26 @@
+# Ignore temporary files
+*.tmp
+*.temp
+*.log
+
+# Ignore session files
+sessions/
+tmp/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore database files (if using SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore uploaded files
+uploads/
