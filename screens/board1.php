@@ -1,58 +1,110 @@
 <?php
 session_start();
+
+// Initialize game if not started
 if (!isset($_SESSION['wealth'])) {
-  $_SESSION['wealth'] = rand(-5000, 20000); // Rich/poor start
-  $_SESSION['age'] = 18;
-  $_SESSION['position'] = 0;
-  $_SESSION['education'] = 'none';
+    $_SESSION['wealth'] = rand(5000, 15000);
+    $_SESSION['age'] = 18;
+    $_SESSION['position'] = 1;
+    $_SESSION['board'] = 1;
+    $_SESSION['career_boost'] = 0;
+    $_SESSION['experience'] = 0;
+    $_SESSION['education'] = 'none';
 }
+
+include '../includes/header.php';
 ?>
 
-<?php include 'includes/header.php'; ?>
-
-<div class="board" style="max-width: 600px; margin: 0 auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
-  <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Choose Your Path</h2>
-  
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-    <div>
-      <p><strong>Wealth:</strong> $<?php echo number_format($_SESSION['wealth']); ?></p>
-      <p><strong>Age:</strong> <?php echo $_SESSION['age']; ?></p>
-    </div>
-    <div>
-      <p><strong>Position:</strong> <?php echo $_SESSION['position']; ?>/30</p>
-      <p><strong>Education:</strong> <?php echo ucfirst($_SESSION['education']); ?></p>
-    </div>
-  </div>
-
-  <form method="post" action="process_choice.php" style="margin-top: 20px;">
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
-      <h3 style="margin-top: 0; color: #3498db;">Select Your Career Path:</h3>
-      
-      <label style="display: block; padding: 10px; margin: 5px 0; background: #e9f7fe; border-radius: 5px; cursor: pointer; transition: all 0.3s;">
-        <input type="radio" name="career" value="college" required style="margin-right: 10px;">
-        <strong>College Degree</strong> (-$5,000)<br>
-        <small style="color: #7f8c8d;">Higher earning potential</small>
-      </label>
-      
-      <label style="display: block; padding: 10px; margin: 5px 0; background: #e9f7fe; border-radius: 5px; cursor: pointer; transition: all 0.3s;">
-        <input type="radio" name="career" value="army" style="margin-right: 10px;">
-        <strong>Military Service</strong> (+$2,000)<br>
-        <small style="color: #7f8c8d;">Steady income, veterans benefits</small>
-      </label>
-      
-      <label style="display: block; padding: 10px; margin: 5px 0; background: #e9f7fe; border-radius: 5px; cursor: pointer; transition: all 0.3s;">
-        <input type="radio" name="career" value="trade" style="margin-right: 10px;">
-        <strong>Trade School</strong> (-$3,000)<br>
-        <small style="color: #7f8c8d;">Quick entry to workforce</small>
-      </label>
+<div class="board-container animate-slideIn">
+    <div class="board-header">
+        <h1 class="board-title">🌱 Early Life Board (Ages 18-30)</h1>
+        <div class="player-stats">
+            <div class="stat-item">💰 Wealth: $<?php echo number_format($_SESSION['wealth']); ?></div>
+            <div class="stat-item">🎂 Age: <?php echo $_SESSION['age']; ?></div>
+            <div class="stat-item">📍 Position: <?php echo $_SESSION['position']; ?>/20</div>
+        </div>
     </div>
 
-    <button type="submit" style="background: #3498db; color: white; border: none; padding: 12px 20px; margin-top: 15px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; transition: background 0.3s;" 
-            onmouseover="this.style.background='#2980b9'" 
-            onmouseout="this.style.background='#3498db'">
-      Confirm Choice
-    </button>
-  </form>
+    <!-- Game Board Path -->
+    <div class="game-board">
+        <h3 style="text-align: center; margin-bottom: 1rem;">🎯 Life Path</h3>
+        <div class="board-path">
+            <?php for ($i = 1; $i <= 20; $i++): ?>
+                <div class="board-space <?php echo ($_SESSION['position'] == $i) ? 'current-position' : ''; ?>">
+                    <div class="space-number"><?php echo $i; ?></div>
+                    <div class="space-event">
+                        <?php
+                        $events = [
+                            1 => "🏠 Start", 2 => "📚 Study", 3 => "💼 Job Fair", 4 => "🎉 Party", 5 => "💰 Savings",
+                            6 => "🚗 Car", 7 => "🏠 Apartment", 8 => "📱 Tech", 9 => "🎓 Degree", 10 => "💕 Love",
+                            11 => "🌍 Travel", 12 => "💼 Career", 13 => "🏋️ Gym", 14 => "🎨 Hobby", 15 => "💰 Bonus",
+                            16 => "🏠 Move", 17 => "📈 Invest", 18 => "🎯 Goal", 19 => "🚀 Launch", 20 => "🎊 Success"
+                        ];
+                        echo $events[$i];
+                        ?>
+                    </div>
+                </div>
+            <?php endfor; ?>
+        </div>
+    </div>
+
+    <!-- Dice Rolling Section -->
+    <div class="dice-section">
+        <h3>🎲 Roll the Dice to Move Forward!</h3>
+        <div class="dice-display" id="diceDisplay">🎲</div>
+        <form method="post" action="roll.php" style="display: inline;">
+            <input type="hidden" name="board" value="1">
+            <button type="submit" class="btn btn-roll">🎲 Roll Dice</button>
+        </form>
+    </div>
+
+    <!-- Life Events -->
+    <div class="life-events">
+        <h3>🌟 Life Choices - Choose Your Path!</h3>
+        <form method="post" action="process_choice.php" class="event-options">
+            <input type="hidden" name="board" value="1">
+
+            <div class="event-option">
+                <label>
+                    <input type="radio" name="action" value="college" required>
+                    🎓 Go to College (-$5,000, +Career Boost for future earnings)
+                </label>
+            </div>
+
+            <div class="event-option">
+                <label>
+                    <input type="radio" name="action" value="job">
+                    💼 Get Entry-Level Job (+$3,000 immediate income)
+                </label>
+            </div>
+
+            <div class="event-option">
+                <label>
+                    <input type="radio" name="action" value="travel">
+                    🌍 Travel the World (-$2,000, +Life Experience)
+                </label>
+            </div>
+
+            <div class="event-option">
+                <label>
+                    <input type="radio" name="action" value="save">
+                    🏦 Live Frugally & Save (+$1,000, safe choice)
+                </label>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-submit">✅ Make Choice</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Navigation -->
+    <div class="action-buttons">
+        <a href="index.php" class="btn btn-secondary">🏠 Back to Menu</a>
+        <?php if ($_SESSION['position'] >= 20): ?>
+            <a href="board2.php" class="btn btn-primary">➡️ Next: Mid-Life Board</a>
+        <?php endif; ?>
+    </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

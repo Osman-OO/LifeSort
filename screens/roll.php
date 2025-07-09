@@ -1,23 +1,54 @@
 <?php
 session_start();
 
-// Roll dice and update position/age
+// Roll dice (1-6)
 $roll = rand(1, 6);
+$_SESSION['last_roll'] = $roll;
+
+// Move player
 $_SESSION['position'] += $roll;
-$_SESSION['age'] += 1;
+$_SESSION['age'] += 1; // Age 1 year per move
 
-// Win condition: Reached end of board3 (e.g., position >= 30)
-if ($_SESSION['position'] >= 30) {
-  header("Location: win.php");
-  exit;
+// Random events based on dice roll
+$random_events = [
+    1 => ['message' => '😔 Bad luck! Lost $500', 'wealth' => -500],
+    2 => ['message' => '💰 Found money! +$300', 'wealth' => 300],
+    3 => ['message' => '🎯 Normal move', 'wealth' => 0],
+    4 => ['message' => '🎯 Normal move', 'wealth' => 0],
+    5 => ['message' => '🎉 Lucky day! +$200', 'wealth' => 200],
+    6 => ['message' => '🚀 Excellent! +$500', 'wealth' => 500]
+];
+
+$event = $random_events[$roll];
+$_SESSION['wealth'] += $event['wealth'];
+$_SESSION['last_event'] = $event['message'];
+
+// Check for game over (bankruptcy)
+if ($_SESSION['wealth'] <= 0) {
+    header('Location: gameover.php');
+    exit;
 }
 
-// Board transitions
-if ($_SESSION['position'] < 10) {
-  header("Location: board1.php");
-} elseif ($_SESSION['position'] < 20) {
-  header("Location: board2.php");
-} else {
-  header("Location: board3.php");
+// Check if completed board
+$current_board = $_SESSION['board'] ?? 1;
+if ($_SESSION['position'] >= 20) {
+    if ($current_board == 1) {
+        $_SESSION['board'] = 2;
+        $_SESSION['position'] = 1;
+        header('Location: board2.php');
+        exit;
+    } elseif ($current_board == 2) {
+        $_SESSION['board'] = 3;
+        $_SESSION['position'] = 1;
+        header('Location: board3.php');
+        exit;
+    } elseif ($current_board == 3) {
+        header('Location: win.php');
+        exit;
+    }
 }
+
+// Return to current board
+header("Location: board{$current_board}.php");
+exit;
 ?>
