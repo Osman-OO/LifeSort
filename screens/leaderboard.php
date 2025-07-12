@@ -27,22 +27,29 @@ include '../includes/header.php';
 function loadLeaderboard() {
     if (typeof(Storage) !== "undefined") {
         let leaderboard = JSON.parse(localStorage.getItem('liferoll_leaderboard') || '[]');
+
+        // Add fake demo user if leaderboard is empty
+        if (leaderboard.length === 0) {
+            leaderboard.push({
+                wealth: 47500,
+                age: 65,
+                education: 'college',
+                date: '12/25/2024',
+                name: 'Alex_Champion'
+            });
+        }
+
         let content = document.getElementById('leaderboard-content');
 
-        if (leaderboard.length === 0) {
-            content.innerHTML = `
-                <div style="text-align: center; padding: 2rem;">
-                    <p>🎮 No scores yet! Play the game to see your results here!</p>
-                </div>
-            `;
-            return;
-        }
+        // Sort leaderboard by wealth
+        leaderboard.sort((a, b) => b.wealth - a.wealth);
 
         let tableHTML = `
             <table class="leaderboard-table">
                 <thead>
                     <tr>
                         <th>🏆 Rank</th>
+                        <th>👤 Player</th>
                         <th>💰 Wealth</th>
                         <th>🎂 Age</th>
                         <th>🎓 Education</th>
@@ -59,9 +66,12 @@ function loadLeaderboard() {
             else if (index === 2) rankIcon = '🥉';
             else rankIcon = `${index + 1}.`;
 
+            let playerName = score.name || 'Anonymous';
+
             tableHTML += `
                 <tr>
                     <td>${rankIcon}</td>
+                    <td>${playerName}</td>
                     <td>$${score.wealth.toLocaleString()}</td>
                     <td>${score.age}</td>
                     <td>${score.education.charAt(0).toUpperCase() + score.education.slice(1)}</td>

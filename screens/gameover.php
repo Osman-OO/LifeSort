@@ -40,13 +40,7 @@ include '../includes/header.php';
         </ul>
     </div>
 
-    <div style="background: rgba(255,255,255,0.2); border-radius: 15px; padding: 1.5rem; margin: 1rem 0;">
-        <h3>🎯 Tips for Next Time</h3>
-        <p>• Choose education early for better earning potential</p>
-        <p>• Balance risk and safety in your decisions</p>
-        <p>• Save money when you can - emergencies happen!</p>
-        <p>• Don't put all your eggs in one basket</p>
-    </div>
+
 
     <div class="action-buttons">
         <a href="index.php" class="btn btn-primary">🔄 Try Again</a>

@@ -73,6 +73,24 @@ if ($final_wealth >= 50000) {
     </div>
 </div>
 
+<script>
+// Add to leaderboard (simple localStorage for demo)
+if (typeof(Storage) !== "undefined") {
+    let playerName = prompt("🎉 Congratulations! Enter your name for the leaderboard:", "Player") || "Anonymous";
+    let leaderboard = JSON.parse(localStorage.getItem('liferoll_leaderboard') || '[]');
+    leaderboard.push({
+        name: playerName,
+        wealth: <?php echo $final_wealth; ?>,
+        age: <?php echo $final_age; ?>,
+        education: '<?php echo $education; ?>',
+        date: new Date().toLocaleDateString()
+    });
+    leaderboard.sort((a, b) => b.wealth - a.wealth);
+    leaderboard = leaderboard.slice(0, 10); // Keep top 10
+    localStorage.setItem('liferoll_leaderboard', JSON.stringify(leaderboard));
+}
+</script>
+
 <?php
 // Clear session for new game
 session_destroy();

@@ -1,13 +1,22 @@
 <?php
 session_start();
 include '../includes/header.php';
+
+// Ensure starting wealth is set
+if (!isset($_SESSION['starting_wealth'])) {
+    $_SESSION['starting_wealth'] = $_SESSION['wealth'];
+}
 ?>
 
 <div class="board-container animate-slideIn">
     <div class="board-header">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem; border-radius: 15px; margin-bottom: 1rem; text-align: center;">
+            <h3>🎯 You started with: $<?php echo number_format($_SESSION['starting_wealth']); ?></h3>
+        </div>
+
         <h1 class="board-title">🏖️ Pre-Retirement Board (Ages 50-65)</h1>
         <div class="player-stats">
-            <div class="stat-item">💰 Wealth: $<?php echo number_format($_SESSION['wealth']); ?></div>
+            <div class="stat-item">💰 Current Wealth: $<?php echo number_format($_SESSION['wealth']); ?></div>
             <div class="stat-item">🎂 Age: <?php echo $_SESSION['age']; ?></div>
             <div class="stat-item">📍 Position: <?php echo $_SESSION['position']; ?>/20</div>
         </div>
@@ -23,6 +32,12 @@ include '../includes/header.php';
                 <strong>Dice Event:</strong> <?php echo $_SESSION['last_event']; unset($_SESSION['last_event']); ?>
             </div>
         <?php endif; ?>
+
+        <?php if (isset($_SESSION['last_roll'])): ?>
+            <div style="background: #f0fff4; border: 2px solid #48bb78; border-radius: 10px; padding: 1rem; margin: 1rem 0; text-align: center;">
+                <strong>🎲 Last Roll:</strong> You rolled a <?php echo $_SESSION['last_roll']; ?>! <?php unset($_SESSION['last_roll']); ?>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Game Board Path -->
@@ -36,9 +51,9 @@ include '../includes/header.php';
                         <?php
                         $events = [
                             1 => "🏖️ Planning", 2 => "💰 Savings", 3 => "📊 Portfolio", 4 => "🏠 Downsize", 5 => "👨‍👩‍👧‍👦 Legacy",
-                            6 => "📈 Invest", 7 => "🎯 Goals", 8 => "💡 Wisdom", 9 => "🤝 Mentor", 10 => "🌟 Peak",
-                            11 => "💰 Wealth", 12 => "🏆 Success", 13 => "📚 Knowledge", 14 => "🎨 Hobbies", 15 => "🌍 Travel",
-                            16 => "👴 Elder", 17 => "🎯 Final", 18 => "🏖️ Ready", 19 => "🎊 Almost", 20 => "🏁 Finish"
+                            6 => "📈 Final Invest", 7 => "🏥 Health Crisis", 8 => "💡 Wisdom", 9 => "🤝 Mentor", 10 => "🌟 Peak",
+                            11 => "📉 Market Crash", 12 => "🏆 Achievement", 13 => "🏠 Scam Loss", 14 => "🎨 Hobbies", 15 => "🌍 Med Tourism",
+                            16 => "👴 Elder", 17 => "🚨 PONZI!", 18 => "🏖️ Ready", 19 => "🎊 Almost", 20 => "🏁 Finish"
                         ];
                         echo $events[$i];
                         ?>
@@ -46,60 +61,25 @@ include '../includes/header.php';
                 </div>
             <?php endfor; ?>
         </div>
+
+        <!-- Dice Rolling Section -->
+        <div style="text-align: center; margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.8); border-radius: 10px;">
+            <h4>🎲 Final Steps to Retirement!</h4>
+            <div style="font-size: 2rem; margin: 0.5rem 0;">🎲</div>
+            <form method="post" action="roll.php" style="display: inline;">
+                <input type="hidden" name="board" value="3">
+                <button type="submit" class="btn btn-roll">🎲 Roll Dice & Move</button>
+            </form>
+        </div>
     </div>
 
-    <!-- Dice Rolling Section -->
-    <div class="dice-section">
-        <h3>🎲 Final Steps to Retirement!</h3>
-        <div class="dice-display" id="diceDisplay">🎲</div>
-        <?php if (isset($_SESSION['last_roll'])): ?>
-            <div class="dice-result">You rolled: <?php echo $_SESSION['last_roll']; ?>!</div>
-        <?php endif; ?>
-        <form method="post" action="roll.php" style="display: inline;">
-            <input type="hidden" name="board" value="3">
-            <button type="submit" class="btn btn-roll">🎲 Roll Dice</button>
-        </form>
+    <!-- Space Event Result -->
+    <?php if (isset($_SESSION['space_event'])): ?>
+    <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 2rem; margin: 2rem 0; text-align: center;">
+        <h3>📍 Space Event Result</h3>
+        <p style="font-size: 1.3rem; margin: 1rem 0; font-weight: bold;"><?php echo $_SESSION['space_event']; unset($_SESSION['space_event']); ?></p>
     </div>
-
-    <!-- Life Events -->
-    <div class="life-events">
-        <h3>🏖️ Retirement Decisions - Your Final Choices!</h3>
-        <form method="post" action="process_choice.php" class="event-options">
-            <input type="hidden" name="board" value="3">
-
-            <div class="event-option">
-                <label>
-                    <input type="radio" name="action" value="retire_early" required>
-                    🏖️ Retire Early (20% wealth penalty, but you're done!)
-                </label>
-            </div>
-
-            <div class="event-option">
-                <label>
-                    <input type="radio" name="action" value="big_investment">
-                    🚀 One Big Investment (30% chance: double wealth or lose 70%)
-                </label>
-            </div>
-
-            <div class="event-option">
-                <label>
-                    <input type="radio" name="action" value="safe_retirement">
-                    🛡️ Safe Retirement Plan (+$5,000, secure choice)
-                </label>
-            </div>
-
-            <div class="event-option">
-                <label>
-                    <input type="radio" name="action" value="work_longer">
-                    💪 Work a Few More Years (+$8,000, delayed retirement)
-                </label>
-            </div>
-
-            <div class="action-buttons">
-                <button type="submit" class="btn btn-submit">✅ Make Final Decision</button>
-            </div>
-        </form>
-    </div>
+    <?php endif; ?>
 
     <!-- Navigation -->
     <div class="action-buttons">
