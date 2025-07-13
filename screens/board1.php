@@ -1,6 +1,12 @@
 <?php
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
+
 // Initialize game if not started
 if (!isset($_SESSION['wealth'])) {
     $_SESSION['wealth'] = rand(5000, 15000);

@@ -1,6 +1,12 @@
 <?php
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
+
 // Redirect if accessed directly without form submission
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: index.php");

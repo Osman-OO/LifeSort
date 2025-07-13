@@ -1,11 +1,28 @@
 <?php
 session_start();
 
-// Get final stats before destroying session
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
+
+// Get final stats before updating account
 $final_wealth = $_SESSION['wealth'] ?? 0;
 $final_age = $_SESSION['age'] ?? 18;
 $education = $_SESSION['education'] ?? 'none';
 $board_completed = $_SESSION['board'] ?? 1;
+
+// Update account statistics
+if (isset($_SESSION['username'])) {
+    $_SESSION['games_played'] = ($_SESSION['games_played'] ?? 0) + 1;
+    $_SESSION['total_earnings'] = ($_SESSION['total_earnings'] ?? 0) + $final_wealth;
+
+    // Update best score if this is better
+    if ($final_wealth > ($_SESSION['best_score'] ?? 0)) {
+        $_SESSION['best_score'] = $final_wealth;
+    }
+}
 
 include '../includes/header.php';
 
@@ -76,7 +93,7 @@ if ($final_wealth >= 50000) {
 <script>
 // Add to leaderboard (simple localStorage for demo)
 if (typeof(Storage) !== "undefined") {
-    let playerName = prompt("🎉 Congratulations! Enter your name for the leaderboard:", "Player") || "Anonymous";
+    let playerName = "<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Anonymous'; ?>";
     let leaderboard = JSON.parse(localStorage.getItem('liferoll_leaderboard') || '[]');
     leaderboard.push({
         name: playerName,

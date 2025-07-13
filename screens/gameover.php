@@ -1,6 +1,12 @@
 <?php
 session_start();
 
+// Check if user is logged in
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit;
+}
+
 // Get final stats before destroying session
 $final_wealth = $_SESSION['wealth'] ?? 0;
 $final_age = $_SESSION['age'] ?? 18;
