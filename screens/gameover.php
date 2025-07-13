@@ -55,7 +55,18 @@ include '../includes/header.php';
 </div>
 
 <?php
-// Clear session for new game
-session_destroy();
+// Clear game data but keep account info
+unset($_SESSION['wealth']);
+unset($_SESSION['age']);
+unset($_SESSION['position']);
+unset($_SESSION['board']);
+unset($_SESSION['career_boost']);
+unset($_SESSION['experience']);
+unset($_SESSION['education']);
+unset($_SESSION['starting_wealth']);
+unset($_SESSION['last_roll']);
+unset($_SESSION['last_event']);
+unset($_SESSION['space_event']);
+
 include '../includes/footer.php';
 ?>

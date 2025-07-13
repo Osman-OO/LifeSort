@@ -15,12 +15,22 @@ $board_completed = $_SESSION['board'] ?? 1;
 
 // Update account statistics and add to leaderboard
 if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+
+    // Update session stats
     $_SESSION['games_played'] = ($_SESSION['games_played'] ?? 0) + 1;
     $_SESSION['total_earnings'] = ($_SESSION['total_earnings'] ?? 0) + $final_wealth;
 
     // Update best score if this is better
     if ($final_wealth > ($_SESSION['best_score'] ?? 0)) {
         $_SESSION['best_score'] = $final_wealth;
+    }
+
+    // Save back to accounts storage
+    if (isset($_SESSION['accounts'][$username])) {
+        $_SESSION['accounts'][$username]['games_played'] = $_SESSION['games_played'];
+        $_SESSION['accounts'][$username]['total_earnings'] = $_SESSION['total_earnings'];
+        $_SESSION['accounts'][$username]['best_score'] = $_SESSION['best_score'];
     }
 
     // Add to leaderboard
@@ -110,7 +120,18 @@ if ($final_wealth >= 50000) {
 </div>
 
 <?php
-// Clear session for new game
-session_destroy();
+// Clear game data but keep account info
+unset($_SESSION['wealth']);
+unset($_SESSION['age']);
+unset($_SESSION['position']);
+unset($_SESSION['board']);
+unset($_SESSION['career_boost']);
+unset($_SESSION['experience']);
+unset($_SESSION['education']);
+unset($_SESSION['starting_wealth']);
+unset($_SESSION['last_roll']);
+unset($_SESSION['last_event']);
+unset($_SESSION['space_event']);
+
 include '../includes/footer.php';
 ?>

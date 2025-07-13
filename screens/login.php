@@ -7,23 +7,60 @@ if (isset($_SESSION['username'])) {
     exit;
 }
 
+// Simple account storage in session
+if (!isset($_SESSION['accounts'])) {
+    $_SESSION['accounts'] = [];
+}
+
 // Handle login/register
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
     $action = $_POST['action'] ?? '';
-    
-    if (!empty($username) && ($action === 'login' || $action === 'register')) {
-        // Simple account system - just store in session
-        $_SESSION['username'] = $username;
-        $_SESSION['account_created'] = date('Y-m-d H:i:s');
-        $_SESSION['games_played'] = 0;
-        $_SESSION['best_score'] = 0;
-        $_SESSION['total_earnings'] = 0;
-        
-        header('Location: index.php');
-        exit;
+
+    if (!empty($username) && !empty($password)) {
+        if ($action === 'register') {
+            // Check if username already exists
+            if (isset($_SESSION['accounts'][$username])) {
+                $error = "Username already exists! Please choose a different one.";
+            } else {
+                // Create new account
+                $_SESSION['accounts'][$username] = [
+                    'password' => $password,
+                    'account_created' => date('Y-m-d H:i:s'),
+                    'games_played' => 0,
+                    'best_score' => 0,
+                    'total_earnings' => 0
+                ];
+
+                // Log them in
+                $_SESSION['username'] = $username;
+                $_SESSION['account_created'] = $_SESSION['accounts'][$username]['account_created'];
+                $_SESSION['games_played'] = 0;
+                $_SESSION['best_score'] = 0;
+                $_SESSION['total_earnings'] = 0;
+
+                header('Location: index.php');
+                exit;
+            }
+        } elseif ($action === 'login') {
+            // Check login credentials
+            if (isset($_SESSION['accounts'][$username]) && $_SESSION['accounts'][$username]['password'] === $password) {
+                // Log them in
+                $_SESSION['username'] = $username;
+                $_SESSION['account_created'] = $_SESSION['accounts'][$username]['account_created'];
+                $_SESSION['games_played'] = $_SESSION['accounts'][$username]['games_played'];
+                $_SESSION['best_score'] = $_SESSION['accounts'][$username]['best_score'];
+                $_SESSION['total_earnings'] = $_SESSION['accounts'][$username]['total_earnings'];
+
+                header('Location: index.php');
+                exit;
+            } else {
+                $error = "Invalid username or password!";
+            }
+        }
     } else {
-        $error = "Please enter a valid username!";
+        $error = "Please enter both username and password!";
     }
 }
 
@@ -44,10 +81,16 @@ include '../includes/header.php';
         <form method="post" class="login-form">
             <div class="input-group">
                 <label for="username">👤 Username:</label>
-                <input type="text" id="username" name="username" required 
+                <input type="text" id="username" name="username" required
                        placeholder="Enter your username" maxlength="20">
             </div>
-            
+
+            <div class="input-group">
+                <label for="password">🔒 Password:</label>
+                <input type="password" id="password" name="password" required
+                       placeholder="Enter your password" maxlength="50">
+            </div>
+
             <div class="button-group">
                 <button type="submit" name="action" value="login" class="btn btn-primary">
                     🔑 Login

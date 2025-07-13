@@ -90,8 +90,8 @@ include '../includes/header.php';
     <!-- Space Event Result -->
     <?php if (isset($_SESSION['space_event'])): ?>
     <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 15px; padding: 2rem; margin: 2rem 0; text-align: center;">
-        <h3>📍 Space Event Result</h3>
-        <p style="font-size: 1.3rem; margin: 1rem 0; font-weight: bold;"><?php echo $_SESSION['space_event']; unset($_SESSION['space_event']); ?></p>
+        <h3>📍 What Just Happened</h3>
+        <p style="font-size: 1.3rem; margin: 1rem 0; font-weight: bold;"><?php echo $_SESSION['space_event']; ?></p>
     </div>
     <?php endif; ?>
 

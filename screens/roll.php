@@ -7,6 +7,9 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// Clear previous space event
+unset($_SESSION['space_event']);
+
 // Roll dice (1-6)
 $roll = rand(1, 6);
 $_SESSION['last_roll'] = $roll;
