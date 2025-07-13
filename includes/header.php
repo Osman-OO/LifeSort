@@ -18,10 +18,10 @@
         <div class="nav-account">
             <?php if (isset($_SESSION['username'])): ?>
                 <div class="account-dropdown">
-                    <button class="account-btn" onclick="toggleDropdown()">
+                    <div class="account-btn">
                         👤 <?php echo htmlspecialchars($_SESSION['username']); ?> ▼
-                    </button>
-                    <div class="dropdown-content" id="accountDropdown">
+                    </div>
+                    <div class="dropdown-content">
                         <a href="account.php">👤 My Account</a>
                         <a href="logout.php">🚪 Logout</a>
                     </div>
@@ -31,22 +31,3 @@
             <?php endif; ?>
         </div>
     </nav>
-
-    <script>
-    function toggleDropdown() {
-        document.getElementById("accountDropdown").classList.toggle("show");
-    }
-
-    // Close dropdown when clicking outside
-    window.onclick = function(event) {
-        if (!event.target.matches('.account-btn')) {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
-            }
-        }
-    }
-    </script>

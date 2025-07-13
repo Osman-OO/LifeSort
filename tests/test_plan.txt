@@ -9,7 +9,7 @@
 - [ ] Win/lose conditions
 
 ## Bug Tracking
-(Add bugs and issues here as they are discovered)
+(
 
 ## Testing Notes
-(Add testing notes and observations here)
+

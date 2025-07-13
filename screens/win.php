@@ -13,7 +13,7 @@ $final_age = $_SESSION['age'] ?? 18;
 $education = $_SESSION['education'] ?? 'none';
 $board_completed = $_SESSION['board'] ?? 1;
 
-// Update account statistics
+// Update account statistics and add to leaderboard
 if (isset($_SESSION['username'])) {
     $_SESSION['games_played'] = ($_SESSION['games_played'] ?? 0) + 1;
     $_SESSION['total_earnings'] = ($_SESSION['total_earnings'] ?? 0) + $final_wealth;
@@ -22,6 +22,25 @@ if (isset($_SESSION['username'])) {
     if ($final_wealth > ($_SESSION['best_score'] ?? 0)) {
         $_SESSION['best_score'] = $final_wealth;
     }
+
+    // Add to leaderboard
+    if (!isset($_SESSION['leaderboard'])) {
+        $_SESSION['leaderboard'] = [];
+    }
+
+    $_SESSION['leaderboard'][] = [
+        'name' => $_SESSION['username'],
+        'wealth' => $final_wealth,
+        'age' => $final_age,
+        'education' => $education,
+        'date' => date('m/d/Y')
+    ];
+
+    // Keep only top 10 scores
+    usort($_SESSION['leaderboard'], function($a, $b) {
+        return $b['wealth'] - $a['wealth'];
+    });
+    $_SESSION['leaderboard'] = array_slice($_SESSION['leaderboard'], 0, 10);
 }
 
 include '../includes/header.php';
@@ -89,24 +108,6 @@ if ($final_wealth >= 50000) {
         <a href="leaderboard.php" class="btn btn-secondary">🏆 View Leaderboard</a>
     </div>
 </div>
-
-<script>
-// Add to leaderboard (simple localStorage for demo)
-if (typeof(Storage) !== "undefined") {
-    let playerName = "<?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Anonymous'; ?>";
-    let leaderboard = JSON.parse(localStorage.getItem('liferoll_leaderboard') || '[]');
-    leaderboard.push({
-        name: playerName,
-        wealth: <?php echo $final_wealth; ?>,
-        age: <?php echo $final_age; ?>,
-        education: '<?php echo $education; ?>',
-        date: new Date().toLocaleDateString()
-    });
-    leaderboard.sort((a, b) => b.wealth - a.wealth);
-    leaderboard = leaderboard.slice(0, 10); // Keep top 10
-    localStorage.setItem('liferoll_leaderboard', JSON.stringify(leaderboard));
-}
-</script>
 
 <?php
 // Clear session for new game
